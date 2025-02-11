@@ -1,21 +1,27 @@
-language: bash
+os: linux
 
-script:
-  # Download the latest version of the Mend Unified Agent
-  - curl -LJO https://github.com/whitesource/unified-agent-distribution/releases/latest/download/wss-unified-agent.jar
-  # Download the default configuration file
-  - curl -LJO https://github.com/whitesource/unified-agent-distribution/raw/master/standAlone/wss-unified-agent.config
-  # Replace the flags in the configuration to enable policy check
-  - sed -e "s/checkPolicies=false/checkPolicies=true/; s/forceCheckAllDependencies=false/forceCheckAllDependencies=true/" wss-unified-agent.config > temp_file.config
-  # Copy the new configuration file over the original file
-  - mv temp_file.config wss-unified-agent.config
-  # Run whitesource FS Agent
-  - java -jar wss-unified-agent.jar -apiKey xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx -c wss-unified-agent.config -d ~/ -project travisCI_test
+vm:
+  size: [large]
+language: java
+services:
+  - docker
+cache: bundler
+dist: bionic
 
-    
+install: skip
+
+jobs:
+  include:
+    - name: failing
+      script: true
+
+after_success:
+  - echo done
+  - echo $TRAVIS_TEST_RESULT
+after_failure:
+  - echo failed
+  - echo $TRAVIS_TEST_RESULT
   
-
-
   
   
 
